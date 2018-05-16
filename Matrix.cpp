@@ -3,35 +3,46 @@
 #include "Matrix.h"
 
 template <class TypeM>
+int Matrix<TypeM>::getWidth() {
+	return matrix->width;
+}
+template <class TypeM>
+int Matrix<TypeM>::getHeight() {
+	return matrix->height;
+}
+
+template <class TypeM>
 void Matrix<TypeM>::transpose() {
 
-	isTransposed = not isTransposed;
+	matrix->isTransposed = not matrix->isTransposed;
 
-	int tmp = width;
+	/*int tmp = width;
 	width = height;
-	height = tmp;
+	height = tmp;*/
+
+	std::swap(matrix->width, matrix->height);
 }
 
 template <class TypeM>
 int Matrix<TypeM>::index(int i, int j) {
 
-	if (not isTransposed) {
+	if (not matrix->isTransposed) {
 		
-		if (i >= sheight or j >= swidth or i < 0 or j < 0) {
+		if (i >= matrix->sheight or j >= matrix->swidth or i < 0 or j < 0) {
 			throw Exception("Wrong indexes");
 			return -1;
 		}
 
-		return i*swidth + j;
+		return i*matrix->swidth + j;
 	
 	} else {
 
-		if (i >= swidth or j >= sheight or i < 0 or j < 0) {
+		if (i >= matrix->swidth or j >= matrix->sheight or i < 0 or j < 0) {
 			throw Exception("Wrong indexes");
 			return -1;
 		}
 		
-		return j*swidth + i;
+		return j*matrix->swidth + i;
 	}
 }
 
@@ -39,11 +50,11 @@ template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::cmul(Matrix mt, TypeM c) {
 
 	//std::cout << "Width and Height: " << mt.width << " " << mt.height << std::endl;
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
+	for (int i = 0; i < mt.matrix->height; i++) {
+		for (int j = 0; j < mt.matrix->width; j++) {
 
 			//std::cout << "Indexes M: " << i << " " << j << " : " << mt[i][j] << std::endl;
-			mt[mt.index(i, j)] = mt[i][j] * c; 
+			mt[i][j] = mt[i][j] * c; 
 		}
 	}
 
@@ -53,13 +64,13 @@ Matrix<TypeM> Matrix<TypeM>::cmul(Matrix mt, TypeM c) {
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::cmul(TypeM c) {
 
-	Matrix mt(sheight, swidth);	
+	Matrix mt(matrix->sheight, matrix->swidth);	
 	
-	mt.arr = arr;
-	mt.isTransposed = isTransposed;
+	mt.matrix->arr = matrix->arr;
+	mt.matrix->isTransposed = matrix->isTransposed;
 
-	mt.width = width;
-	mt.height = height;
+	mt.matrix->width = matrix->width;
+	mt.matrix->height = matrix->height;
 
 	return Matrix::cmul(mt, c);
 }
@@ -69,11 +80,11 @@ Matrix<TypeM> Matrix<TypeM>::sum(Matrix mt1, Matrix mt2) {
 
 	int w1, w2, h1, h2;
 
-	w1 = mt1.width;
-	w2 = mt2.width;
+	w1 = mt1.matrix->width;
+	w2 = mt2.matrix->width;
 	
-	h1 = mt1.height;
-	h2 = mt2.height;
+	h1 = mt1.matrix->height;
+	h2 = mt2.matrix->height;
 
 
 	if (not (w1 == w2) and not (h1 == h2)) {
@@ -84,7 +95,7 @@ Matrix<TypeM> Matrix<TypeM>::sum(Matrix mt1, Matrix mt2) {
 	for (int i = 0; i < h1; i++) {
 		for (int j = 0; j < w1; j++) {
 			//std::cout << "Indexes: " << i << " " << j << " : " << mt1[i][j] << " " << mt2[i][j] << std::endl;
-			mt1[mt1.index(i, j)] = mt1[i][j] + mt2[i][j];
+			mt1[i][j] = mt1[i][j] + mt2[i][j];
 		}
 	}
 
@@ -95,12 +106,12 @@ Matrix<TypeM> Matrix<TypeM>::sum(Matrix mt1, Matrix mt2) {
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::sum(Matrix mt) {
 
-	Matrix mt2(sheight, swidth);	
-	mt2.arr = arr;
-	mt2.isTransposed = isTransposed;
+	Matrix mt2(matrix->sheight, matrix->swidth);	
+	mt2.matrix->arr = matrix->arr;
+	mt2.matrix->isTransposed = matrix->isTransposed;
 
-	mt2.width = width;
-	mt2.height = height;
+	mt2.matrix->width = matrix->width;
+	mt2.matrix->height = matrix->height;
 
 	return Matrix::sum(mt, mt2);
 } 
@@ -108,13 +119,13 @@ Matrix<TypeM> Matrix<TypeM>::sum(Matrix mt) {
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mul(Matrix mt1, Matrix mt2) {
 
-	if (mt1.width != mt2.height) {
+	if (mt1.matrix->width != mt2.matrix->height) {
 		throw Exception("Wrong Matrix Multiplication sizes");
 	}
 
-	int w = mt2.width;
-	int h = mt1.height;
-	int m = mt1.width;
+	int w = mt2.matrix->width;
+	int h = mt1.matrix->height;
+	int m = mt1.matrix->width;
 
 	Matrix mt(h, w);
 
@@ -125,7 +136,7 @@ Matrix<TypeM> Matrix<TypeM>::mul(Matrix mt1, Matrix mt2) {
 				sum += mt1[i][k] * mt2[k][j];
 			}
 
-			mt[mt.index(i, j)] = sum;
+			mt[i][j] = sum;
 		}
 	}
 
@@ -135,12 +146,12 @@ Matrix<TypeM> Matrix<TypeM>::mul(Matrix mt1, Matrix mt2) {
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mul(Matrix mt2) {
 
-	Matrix mt(sheight, swidth);	
-	mt.arr = arr;
-	mt.isTransposed = isTransposed;
+	Matrix mt(matrix->sheight, matrix->swidth);	
+	mt.matrix->arr = matrix->arr;
+	mt.matrix->isTransposed = matrix->isTransposed;
 
-	mt.width = width;
-	mt.height = height;
+	mt.matrix->width = matrix->width;
+	mt.matrix->height = matrix->height;
 
 	return Matrix::mul(mt, mt2);
 }
@@ -149,9 +160,9 @@ template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mget(Matrix mt, int startY, int startX, int nheight, int nwidth) {
 	
 	if ((startX + nwidth) <= 0 or 
-		(startX + nwidth) > mt.width or 
+		(startX + nwidth) > mt.matrix->width or 
 		(startY + nheight) <= 0 or 
-		(startY + nheight) > mt.height) 
+		(startY + nheight) > mt.matrix->height) 
 	{
 
 		throw Exception("Wrong matrix slice size");
@@ -163,7 +174,7 @@ Matrix<TypeM> Matrix<TypeM>::mget(Matrix mt, int startY, int startX, int nheight
 	for (int i = startY; i < startY + nheight; i++) {
 		for (int j = startX; j < startX + nwidth; j++) {
 
-			mtn[mtn.index(i-startY, j-startX)] = mt[i][j];
+			mtn[i-startY][j-startX] = mt[i][j];
 		}
 	}
 
@@ -173,12 +184,12 @@ Matrix<TypeM> Matrix<TypeM>::mget(Matrix mt, int startY, int startX, int nheight
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mget(int startY, int startX, int nheight, int nwidth) {
 
-	Matrix mt(sheight, swidth);	
-	mt.arr = arr;
-	mt.isTransposed = isTransposed;
+	Matrix mt(matrix->sheight, matrix->swidth);	
+	mt.matrix->arr = matrix->arr;
+	mt.matrix->isTransposed = matrix->isTransposed;
 
-	mt.width = width;
-	mt.height = height;
+	mt.matrix->width = matrix->width;
+	mt.matrix->height = matrix->height;
 
 	return Matrix::mget(mt, startY, startX, nheight, nwidth);
 }
@@ -186,19 +197,19 @@ Matrix<TypeM> Matrix<TypeM>::mget(int startY, int startX, int nheight, int nwidt
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mset(Matrix mt1, Matrix mt2, int startY, int startX) {
 
-	if ((startX + mt2.width) <= 0 or 
-		(startX + mt2.width) > mt1.width or 
-		(startY + mt2.height) <= 0 or
-		(startY + mt2.height) > mt1.height)	
+	if ((startX + mt2.matrix->width) <= 0 or 
+		(startX + mt2.matrix->width) > mt1.matrix->width or 
+		(startY + mt2.matrix->height) <= 0 or
+		(startY + mt2.matrix->height) > mt1.matrix->height)	
 	{
 
 		throw Exception("Can't put sliced matrix inside this matrix");
 		return mt1;
 	}
 
-	for (int i = startY; i < startY + mt2.height; i++) {
-		for (int j = startX; j < startX + mt2.width; j++) {
-			mt1[mt1.index(i, j)] = mt2[i-startY][j-startX];
+	for (int i = startY; i < startY + mt2.matrix->height; i++) {
+		for (int j = startX; j < startX + mt2.matrix->width; j++) {
+			mt1[i][j] = mt2[i-startY][j-startX];
 		}
 	}
 
@@ -209,12 +220,12 @@ Matrix<TypeM> Matrix<TypeM>::mset(Matrix mt1, Matrix mt2, int startY, int startX
 template <class TypeM>
 Matrix<TypeM> Matrix<TypeM>::mset(Matrix mt2, int startY, int startX) {
 
-	Matrix mt(sheight, swidth);	
-	mt.arr = arr;
-	mt.isTransposed = isTransposed;
+	Matrix mt(matrix->sheight, matrix->swidth);	
+	mt.matrix->arr = matrix->arr;
+	mt.matrix->isTransposed = matrix->isTransposed;
 
-	mt.width = width;
-	mt.height = height;
+	mt.matrix->width = matrix->width;
+	mt.matrix->height = matrix->height;
 
 	return Matrix::mset(mt, mt2, startY, startX);
 }
@@ -229,13 +240,15 @@ Matrix<TypeM>::Matrix(int mheight, int mwidth) {
 		throw Exception("Negative size");
 	}
 
-	sheight = mheight;
-	swidth = mwidth;
+	matrix = new MatrixLink<TypeM>;
 
-	height = sheight;
-	width = swidth;
+	matrix->sheight = mheight;
+	matrix->swidth = mwidth;
 
-	arr = new TypeM[height*width];
+	matrix->height = matrix->sheight;
+	matrix->width = matrix->swidth;
+
+	matrix->arr = new TypeM[matrix->height*matrix->width];
 
 }
 
@@ -266,20 +279,30 @@ Matrix<TypeM> operator*(Matrix<TypeM>& mt1, Matrix<TypeM>& mt2) {
 
 
 
+
+
+
+
+
+
+
+
+
 int main() {
 
-	/*Matrix<float> mt(3, 6);
+	//test1
+	Matrix<float> mt(3, 6);
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			mt[mt.index(i, j)] = i*mt.width + j + 1;
+	for (int i = 0; i < mt.getHeight(); i++) {
+		for (int j = 0; j < mt.getWidth(); j++) {
+			mt[i][j] = i*mt.getWidth() + j + 1;
 		}
 	}
 
 	mt = mt.cmul(3.141);
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
+	for (int i = 0; i < mt.getHeight(); i++) {
+		for (int j = 0; j < mt.getWidth(); j++) {
 			std::cout << mt[i][j] << " ";
 		}
 		std::cout << std::endl;
@@ -288,31 +311,32 @@ int main() {
 	mt.transpose();
 	std::cout << std::endl;
 
-	for (int i = 0; i < mt.width; i++) {
-		for (int j = 0; j < mt.height; j++) {
+	for (int i = 0; i < mt.getHeight(); i++) {
+		for (int j = 0; j < mt.getWidth(); j++) {
 			std::cout << mt[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
-	*/
+	
 
 
 
+	//test2 
 
-	/*Matrix<int> mt1(2, 3);
+	Matrix<int> mt1(2, 3);
 	Matrix<int> mt2(3, 2);
 
-	for (int i = 0; i < mt1.height; i++) {
-		for (int j = 0; j < mt1.width; j++) {
-			mt1[mt1.index(i, j)] = i*mt1.width + j + 1;
+	for (int i = 0; i < mt1.getHeight(); i++) {
+		for (int j = 0; j < mt1.getWidth(); j++) {
+			mt1[i][j] = i*mt1.getWidth() + j + 1;
 		}
 	}
 
 
-	for (int i = 0; i < mt2.height; i++) {
-		for (int j = 0; j < mt2.width; j++) {
-			mt2[mt2.index(i, j)] = (i*mt2.width + j + 1) * (i*mt2.width + j + 1);
+	for (int i = 0; i < mt2.getHeight(); i++) {
+		for (int j = 0; j < mt2.getWidth(); j++) {
+			mt2[i][j] = (i*mt2.getWidth() + j + 1) * (i*mt2.getWidth() + j + 1);
 		}
 	}
 
@@ -323,16 +347,16 @@ int main() {
 	mt2.cmul(-1);
 	cout << endl;
 	
-	for (int i = 0; i < mt1.height; i++) {
-		for (int j = 0; j < mt1.width; j++) {
+	for (int i = 0; i < mt1.getHeight(); i++) {
+		for (int j = 0; j < mt1.getWidth(); j++) {
 			cout << mt1[i][j] << " ";
 		}
 		cout << endl;
 	}
 
 	cout << endl;
-	for (int i = 0; i < mt2.height; i++) {
-		for (int j = 0; j < mt2.width; j++) {
+	for (int i = 0; i < mt2.getHeight(); i++) {
+		for (int j = 0; j < mt2.getWidth(); j++) {
 			cout << mt2[i][j] << " ";
 		}
 		cout << endl;
@@ -341,131 +365,136 @@ int main() {
 	cout << endl;
 	Matrix<int> mt3 = mt1 - mt2;
 
-	for (int i = 0; i < mt3.height; i++) {
-		for (int j = 0; j < mt3.width; j++) {
+	for (int i = 0; i < mt3.getHeight(); i++) {
+		for (int j = 0; j < mt3.getWidth(); j++) {
 			cout << mt3[i][j] << " ";
 		}
 		cout << endl;
-	}*/
+	}
 
 
 
+	//test3
 
-	/*Matrix<float> mt(2, 3);
+	Matrix<float> mtmd(2, 3);
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			mt[mt.index(i, j)] = i*mt.width + j + 1;
+	for (int i = 0; i < mtmd.getHeight(); i++) {
+		for (int j = 0; j < mtmd.getWidth(); j++) {
+			mtmd[i][j] = i*mtmd.getWidth() + j + 1;
 		}
 	}
 
-	mt = mt*((float) 2);
+	mtmd = mtmd*((float) 2);
 	using namespace std;
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			cout << mt[i][j] << " ";
+	for (int i = 0; i < mtmd.getHeight(); i++) {
+		for (int j = 0; j < mtmd.getWidth(); j++) {
+			cout << mtmd[i][j] << " ";
 		}
 		cout << endl;
 	}
 
 	cout << endl;
 
-	mt = ((float) -0.5)*mt;
-	mt.transpose();
-	mt = ((float) -1)*mt;
+	mtmd = ((float) -0.5)*mtmd;
+	mtmd.transpose();
+	mtmd = ((float) -1)*mtmd;
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			cout << mt[i][j] << " ";
+	for (int i = 0; i < mtmd.getHeight(); i++) {
+		for (int j = 0; j < mtmd.getWidth(); j++) {
+			cout << mtmd[i][j] << " ";
 		}
 		cout << endl;
 	}
 
 	cout << endl;
-	cout << mt[0][1]*5 << endl; */
+	cout << mtmd[0][1]*5 << endl; 
 
-	/*Matrix<int> mt1(2, 3);
-	Matrix<int> mt2(3, 2);
 
-	mt1[mt1.index(0, 0)] = 1;
-	mt1[mt1.index(0, 1)] = 2;
-	mt1[mt1.index(0, 2)] = -3;
-	mt1[mt1.index(1, 0)] = -1;
-	mt1[mt1.index(1, 1)] = 3;
-	mt1[mt1.index(1, 2)] = 5;
+	//test4
 
-	mt2[mt2.index(0, 0)] = 2;
-	mt2[mt2.index(0, 1)] = 3;
-	mt2[mt2.index(1, 0)] = -1;
-	mt2[mt2.index(1, 1)] = 3;
-	mt2[mt2.index(2, 0)] = 3;
-	mt2[mt2.index(2, 1)] = -4;
+	Matrix<int> mtd1(2, 3);
+	Matrix<int> mtd2(3, 2);
 
-	for (int i = 0; i < mt1.height; i++) {
-		for (int j = 0; j < mt1.width; j++) {
-			std::cout << mt1[i][j] << " ";
+	mtd1[0][0] = 1;
+	mtd1[0][1] = 2;
+	mtd1[0][2] = -3;
+	mtd1[1][0] = -1;
+	mtd1[1][1] = 3;
+	mtd1[1][2] = 5;
+
+	mtd2[0][0] = 2;
+	mtd2[0][1] = 3;
+	mtd2[1][0] = -1;
+	mtd2[1][1] = 3;
+	mtd2[2][0] = 3;
+	mtd2[2][1] = -4;
+
+	for (int i = 0; i < mtd1.getHeight(); i++) {
+		for (int j = 0; j < mtd1.getWidth(); j++) {
+			std::cout << mtd1[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 
-	for (int i = 0; i < mt2.height; i++) {
-		for (int j = 0; j < mt2.width; j++) {
-			std::cout << mt2[i][j] << " ";
+	for (int i = 0; i < mtd2.getHeight(); i++) {
+		for (int j = 0; j < mtd2.getWidth(); j++) {
+			std::cout << mtd2[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 
 
-	Matrix<int> mt3 = mt1 * mt2;
-	mt3 = mt3*mt3;
+	Matrix<int> mtd3 = mtd1 * mtd2;
+	mtd3 = mtd3*mtd3;
 	std::cout << std::endl;
 
-	for (int i = 0; i < mt3.height; i++) {
-		for (int j = 0; j < mt3.width; j++) {
-			std::cout << mt3[i][j] << " ";
+	for (int i = 0; i < mtd3.getHeight(); i++) {
+		for (int j = 0; j < mtd3.getWidth(); j++) {
+			std::cout << mtd3[i][j] << " ";
 		}
 		std::cout << std::endl;
-	}*/
+	}
 
-	Matrix<int> mt(4, 4);
+	Matrix<int> mtxn(4, 4);
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			mt[mt.index(i, j)] = i*mt.width + j + 1;
+	for (int i = 0; i < mtxn.getHeight(); i++) {
+		for (int j = 0; j < mtxn.getWidth(); j++) {
+			mtxn[i][j] = i*mtxn.getWidth() + j + 1;
 		}
 	}
 
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			std::cout << mt[i][j] << " ";
+	for (int i = 0; i < mtxn.getHeight(); i++) {
+		for (int j = 0; j < mtxn.getWidth(); j++) {
+			std::cout << mtxn[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 
 	std::cout << std::endl;
 
-	Matrix<int> slice = mt.mget(1, 1, 2, 2);
-	for (int i = 0; i < slice.height; i++) {
-		for (int j = 0; j < slice.width; j++) {
+	Matrix<int> slice = mtxn.mget(1, 1, 2, 2);
+	for (int i = 0; i < slice.getHeight(); i++) {
+		for (int j = 0; j < slice.getWidth(); j++) {
 			std::cout << slice[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
 
 	std::cout << std::endl;
-	for (int i = 0; i < slice.height; i++) {
-		for (int j = 0; j < slice.width; j++) {
-			slice[slice.index(i, j)] = -1;
+	for (int i = 0; i < slice.getHeight(); i++) {
+		for (int j = 0; j < slice.getWidth(); j++) {
+			slice[i][j] = -1;
 		}
 	}
 
-	mt = mt.mset(slice, 1, 1);
-	for (int i = 0; i < mt.height; i++) {
-		for (int j = 0; j < mt.width; j++) {
-			std::cout << mt[i][j] << " ";
+	mtxn = mtxn.mset(slice, 1, 1);
+	for (int i = 0; i < mtxn.getHeight(); i++) {
+		for (int j = 0; j < mtxn.getWidth(); j++) {
+			std::cout << mtxn[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
+
 }

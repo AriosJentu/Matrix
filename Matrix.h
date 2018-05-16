@@ -4,18 +4,24 @@
 #pragma once
 
 template <class TypeM>
+struct MatrixLink {
+	
+	TypeM* arr;
+	int swidth, sheight;
+	int counter;
+	bool isTransposed = false;
+	int height, width;
+
+};
+
+template <class TypeM>
 class Matrix {
 private:
 
-	TypeM* arr;
-	int swidth, sheight;
-
-	int byIndex(int i, int j);
+	MatrixLink<TypeM>* matrix;
 
 public:
 
-	int height, width;
-	bool isTransposed = false;
 
 	void transpose();
 	int index(int i, int j);
@@ -32,6 +38,9 @@ public:
 	Matrix mget(int startY, int startX, int nheight, int nwidth);
 	Matrix mset(Matrix mt, int startY, int startX);
 
+	int getWidth();
+	int getHeight();
+
 	//construct
 	Matrix(int height, int width=1);
 
@@ -47,12 +56,12 @@ public:
 			mi = i;
 		}
 
-		TypeM operator[](int j) {
-			return mtx->arr[mtx->index(mi, j)];
+		TypeM& operator[](int j) {
+			return mtx->matrix->arr[mtx->index(mi, j)];
 		}
 
-		Proxy operator=(TypeM val) {
-			mtx->arr[mi] = val;
+		void operator=(TypeM val) {
+			mtx->matrix->arr[mi] = val;
 		}
 	};
 
@@ -78,6 +87,17 @@ public:
 		return Proxy(this, i);
 	}
 
+
+	Matrix operator=(Matrix mtx) {
+
+		if (matrix != mtx.matrix) {
+			mtx.matrix->counter++;
+			matrix->counter--;
+		}
+
+		return mtx;
+	}
+
 };
 
 template <class TypeM>
@@ -91,3 +111,6 @@ Matrix<TypeM> operator*(TypeM c, Matrix<TypeM>& mt);
 
 template <class TypeM>
 Matrix<TypeM> operator*(Matrix<TypeM>& mt, TypeM c);
+
+//template <class TypeM>
+//Matrix<TypeM>& operator=(Matrix<TypeM>& mt);
