@@ -239,3 +239,6 @@ bool operator==(Matrix<TypeM> mt1, Matrix<TypeM> mt2);
 
 template <class TypeM>
 Slice<TypeM> operator*(Slice<TypeM>& slc, TypeM c);
+
+template <class TypeM>
+Slice<TypeM> operator*(TypeM c, Slice<TypeM>& slc);

@@ -372,7 +372,7 @@ template <class TypeM>
 Slice<TypeM>::Slice(Matrix<TypeM>* m, int nstartY, int nstartX, int sheight, int swidth, int nstep) {
 
 	matrix = m;
-	if ((nstartY + (sheight-1)*nstep >= matrix->getHeight()) or (nstartX + (swidth-1)*nstep >= matrix->getWidth())) {
+	if ((nstartY + (sheight-1)*nstep >= matrix->getHeight()) or (nstartX + (swidth-1)*nstep >= matrix->getWidth()) or nstep <= 0) {
 		throw Exception("Wrong matrix slice size");
 	}
 
@@ -388,9 +388,15 @@ Slice<TypeM> operator*(Slice<TypeM>& slc, TypeM c) {
 	return slc.mul(c);
 }
 
+template <class TypeM>
+Slice<TypeM> operator*(TypeM c, Slice<TypeM>& slc) {
+	return slc.mul(c);
+}
+
 
 
 /*
+
 int main() {
 	Matrix<int> a(5, 5);
 	for (int i = 0; i < a.getHeight(); i++) {
@@ -443,6 +449,7 @@ int main() {
 	Matrix<int> c = slc.getAsMatrix();
 
 }
+
 */
 
 
